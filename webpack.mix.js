@@ -1,5 +1,21 @@
 const mix = require('laravel-mix');
 
+// Getting necessary vars from .env, take only var that you need
+require('dotenv').config()
+let webpack = require('webpack')
+
+let dotenvplugin = new webpack.DefinePlugin({
+    'process.env': {
+        HMR_URL: JSON.stringify(process.env.HMR_URL || 'http://localhost'),
+    }
+})
+
+mix.webpackConfig({
+    plugins: [
+        dotenvplugin
+    ]
+})
+
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -16,3 +32,11 @@ mix.js('resources/js/app.js', 'public/js')
         require('postcss-import'),
         require('tailwindcss'),
     ]);
+
+mix.options({
+    hmrOptions: {
+        host: process.env.HMR_URL,
+        port: 8080
+    },
+    optimization: { concatenateModules: false, providedExports: false, usedExports: false }
+})
